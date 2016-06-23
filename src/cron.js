@@ -8,6 +8,7 @@
  */
 
 const https = require('https');
+const pg = require('knex')(require('../knexfile'));
 
 const jobName = 'chicago-forecast.io';
 const API_KEY = process.env.FORECAST_IO_API_KEY || 'no-key-available';
@@ -22,11 +23,39 @@ function job() {
 }
 
 function saveResponse(res) {
-  console.log('Response: ', res);
+  const weather = JSON.parse(res);
+  const currentWeather = {
+    status: weather.currently.summary,
+    statusicon: weather.currently.icon,
+    temperature: weather.currently.temperature,
+    windspeed: weather.currently.windSpeed,
+  };
+
+  // TODO:
+  // Need to add insert for hourly weather
+  // Need to add error handling and checking incase transaction failes
+  // Need to add error handling in case https fails
+  // Add winston logging
+  // Make this thing prettier
+
+  pg.transaction((trx) => {
+    pg.insert(currentWeather, 'id').into('weather').then((id) => {
+      const hourlyWeather = weather.hourly.data.map((forecast) => {
+        return {
+          weatherid: id,
+          time: forecast.time,
+          status: forecast.summary,
+          statusicon: forecast.icon,
+          temperature: forecast.temperature,
+          windspeed: forecast.windspeed,
+        };
+      });
+    });
+  });
 }
 
 function formatResponse(res) {
-  let data;
+  let data= "";
   res.on('data', (d) => data += d);
   res.on('end', () => saveResponse(data));
 }

@@ -1,11 +1,14 @@
-
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('table_name').del()
-    .then(function () {
+  return knex('weather').del()
+    .then(() => {
       return Promise.all([
-        // Inserts seed entries
-        knex('table_name').insert({id: 1, colName: 'rowValue1'}),
+        knex('weather').insert({
+          status: 'Clear',
+          statusicon: 'clear-icon',
+          temperature: '70.0',
+          windspeed: '12.0',
+        });
       ]);
     });
 };

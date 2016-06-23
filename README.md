@@ -15,4 +15,6 @@ administer the sibtw-cron job.
   npm run seed // seeds the db. found at /seed/dev.js
 ```
 
+### Initialize db
 
+On first load you will need to run the command `createdb sibtw-cron`
