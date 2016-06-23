@@ -1,0 +1,30 @@
+{
+  "name": "@dannypaz/sibtwcron",
+  "version": "0.1.0",
+  "description": "Cron job for grabbing weather data from forecast.io",
+  "main": "cron.js",
+  "scripts": {
+    "start": "node cron.js",
+    "seed": "knex seed:run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dannypaz/sibtw-cron.git"
+  },
+  "author": "Danny Paz <dan.pazuchowski@gmail.com> (http://www.dannypaz.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dannypaz/sibtw-cron/issues"
+  },
+  "homepage": "https://github.com/dannypaz/sibtw-cron#readme",
+  "dependencies": {
+    "dotenv": "2.0.0",
+    "knex": "0.11.7",
+    "node-runnr": "1.1.0",
+    "pg": "6.0.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "mocha": "2.5.3"
+  }
+}
