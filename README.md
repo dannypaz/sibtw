@@ -13,6 +13,7 @@ administer the sibtw-cron job.
 ```
   npm start // starts all cron jobs
   npm run seed // seeds the db. found at /seed/dev.js
+  npm run db-migrate // migrate to latest db info
 ```
 
 ### Initialize db
