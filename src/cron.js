@@ -5,21 +5,22 @@
  * API failures and will log info, then retry.
  *
  * After the 5th failure, a notification will be sent to the developers.
+ *
+ * TODO:
+ * ADD SOME BETTER ERROR HANDLING. The errors get buried inside of the pg
+ * transaction :(
  */
 
 const https = require('https');
 const pg = require('knex')(require('../knexfile'));
+const urlCreator = require('./url-creator');
 
-const jobName = 'chicago-forecast.io';
-const API_KEY = process.env.FORECAST_IO_API_KEY || 'no-key-available';
-const CHICAGO_LAT = 41.8843;
-const CHICAGO_LONG = -87.6324;
-const BASE_URL = `https://api.forecast.io/forecast/${API_KEY}`;
-const REQUEST_URL = `${BASE_URL}/${CHICAGO_LAT},${CHICAGO_LONG}`;
-
-function job() {
-  console.log(`Starting ${jobName} cron`);
-  https.get(REQUEST_URL, formatResponse).on('error', onError);
+function startJob(_data, _next, exit) {
+  console.log(`Starting ${this.details.name} cron`);
+  const url = urlCreator.requestUrl(this.details.lat, this.details.lon);
+  return https.get(url, formatResponse)
+              .on('finish', exit)
+              .on('error', onHttpError);
 }
 
 function saveResponse(res) {
@@ -32,25 +33,25 @@ function saveResponse(res) {
   };
 
   // TODO:
-  // Need to add insert for hourly weather
-  // Need to add error handling and checking incase transaction failes
-  // Need to add error handling in case https fails
-  // Add winston logging
   // Make this thing prettier
 
   pg.transaction((trx) => {
     pg.insert(currentWeather, 'id').into('weather').then((id) => {
+      const weatherId = id[0];
       const hourlyWeather = weather.hourly.data.map((forecast) => {
         return {
-          weatherid: id,
-          time: forecast.time,
+          weather_id: weatherId,
+          time: new Date(secondsToMilliseconds(forecast.time)),
           status: forecast.summary,
           statusicon: forecast.icon,
           temperature: forecast.temperature,
           windspeed: forecast.windspeed,
         };
       });
+      return pg.insert(hourlyWeather).into('hourly_weather');
     });
+  }).catch((err) => {
+    console.error('Cron weather transaction failed: ', err);
   });
 }
 
@@ -60,15 +61,17 @@ function formatResponse(res) {
   res.on('end', () => saveResponse(data));
 }
 
-function onError(err) {
-  console.log('Request for ${jobName} failed: ', err.message);
+function secondsToMilliseconds(seconds) {
+  return (seconds * 1000);
 }
 
-function exit() {
-  console.log(`Exiting ${jobName} cron`);
+function onHttpError(err) {
+  console.error('Request failed: ', err.message);
 }
 
-exports.job = job;
-exports.exit = exit;
-exports.name = jobName;
-exports.details = {};
+function finish() {
+  console.log(`Finished ${this.details.name} cron`);
+}
+
+exports.startJob = startJob;
+exports.finish = finish;

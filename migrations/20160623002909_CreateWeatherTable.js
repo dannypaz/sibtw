@@ -1,5 +1,5 @@
-exports.up = function(knex, Promise) {
-  knex.schema.createTableIfNotExists('weather', (table) => {
+function up(knex, Promise) {
+  return knex.schema.createTableIfNotExists('weather', (table) => {
     table.increments();
     table.string('status');
     table.string('statusicon');
@@ -7,3 +7,6 @@ exports.up = function(knex, Promise) {
     table.float('windspeed');
   });
 };
+
+exports.up = up;
+exports.down = () => {};
