@@ -4,9 +4,6 @@
  * All jobs are created and ran from this point using the cron utility.
  */
 
-// Load .env file for application
-require('dotenv').config();
-
 const Runnr = require('node-runnr');
 const cron = require('./src/cron');
 
@@ -23,7 +20,7 @@ const firstJob = weatherJobs[0];
 
 // TODO:
 // Add batch creation of jobs using promises
-Jobs.interval(firstJob.name, '5:00', firstJob)
+Jobs.interval(firstJob.name, '0:02', firstJob)
     .job(cron.startJob)
     .exit(cron.exit);
 

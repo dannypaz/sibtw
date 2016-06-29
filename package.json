@@ -4,7 +4,7 @@
   "description": "Cron job for grabbing weather data from forecast.io",
   "main": "cron.js",
   "scripts": {
-    "start": "pm2 start cron.js --node-args='--optimize_for_size --max_old_space_size=920 --gc_interval=100'",
+    "start": "pm2 start cron.js --node-args='--optimize_for_size --max_old_space_size=920 --gc_interval=100 -r dotenv/config'",
     "logs": "pm2 logs cron",
     "seed": "knex seed:run",
     "jsdoc": "jsdoc cron.js knexfile.js src",
