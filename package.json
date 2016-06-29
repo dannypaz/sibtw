@@ -4,8 +4,11 @@
   "description": "Cron job for grabbing weather data from forecast.io",
   "main": "cron.js",
   "scripts": {
-    "start": "node cron.js",
+    "start": "pm2 start cron.js --node-args='--optimize_for_size --max_old_space_size=920 --gc_interval=100'",
+    "logs": "pm2 logs cron",
     "seed": "knex seed:run",
+    "jsdoc": "jsdoc cron.js knexfile.js src",
+    "doc-server": "http-server ./out/ -p 9000",
     "db-migrate": "knex migrate:latest"
   },
   "repository": {
@@ -27,6 +30,8 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "http-server": "0.9.0",
+    "jsdoc": "3.4.0",
     "mocha": "2.5.3"
   }
 }
