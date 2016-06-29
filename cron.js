@@ -23,8 +23,8 @@ const firstJob = weatherJobs[0];
 
 // TODO:
 // Add batch creation of jobs using promises
-Jobs.interval(firstJob.name, '0:02', firstJob)
+Jobs.interval(firstJob.name, '5:00', firstJob)
     .job(cron.startJob)
-    .exit(cron.finish);
+    .exit(cron.exit);
 
 Jobs.begin();

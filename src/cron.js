@@ -23,6 +23,12 @@ function startJob(_data, _next, exit) {
               .on('error', onHttpError);
 }
 
+function formatResponse(res) {
+  let data= "";
+  res.on('data', (d) => data += d);
+  res.on('end', () => saveResponse(data));
+}
+
 function saveResponse(res) {
   const weather = JSON.parse(res);
   const currentWeather = {
@@ -31,9 +37,6 @@ function saveResponse(res) {
     temperature: weather.currently.temperature,
     windspeed: weather.currently.windSpeed,
   };
-
-  // TODO:
-  // Make this thing prettier
 
   pg.transaction((trx) => {
     pg.insert(currentWeather, 'id').into('weather').then((id) => {
@@ -55,12 +58,6 @@ function saveResponse(res) {
   });
 }
 
-function formatResponse(res) {
-  let data= "";
-  res.on('data', (d) => data += d);
-  res.on('end', () => saveResponse(data));
-}
-
 function secondsToMilliseconds(seconds) {
   return (seconds * 1000);
 }
@@ -69,9 +66,9 @@ function onHttpError(err) {
   console.error('Request failed: ', err.message);
 }
 
-function finish() {
+function exit() {
   console.log(`Finished ${this.details.name} cron`);
 }
 
 exports.startJob = startJob;
-exports.finish = finish;
+exports.exit = exit;
