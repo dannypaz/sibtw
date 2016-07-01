@@ -16,7 +16,7 @@ const pg = require('knex')(require('../knexfile'));
 const urlCreator = require('./url-creator');
 
 function startJob(_data, _next, exit) {
-  console.log(`Starting ${this.details.name} cron`);
+  console.log(`Starting ${this.details.name} cron @ ${new Date().toString()}`);
   const url = urlCreator.requestUrl(this.details.lat, this.details.lon);
   return https.get(url, formatResponse)
               .on('finish', exit)
@@ -67,7 +67,7 @@ function onHttpError(err) {
 }
 
 function exit() {
-  console.log(`Finished ${this.details.name} cron`);
+  console.log(`Finished ${this.details.name} cron @ ${new Date().toString()}`);
 }
 
 exports.startJob = startJob;
