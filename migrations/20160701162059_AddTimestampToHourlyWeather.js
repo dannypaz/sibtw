@@ -1,5 +1,5 @@
 function up(knex, Promise) {
-  return knex.schema.table('weather', () => {
+  return knex.schema.table('hourly_weather', (table) => {
     table.timestamps();
   })
 };
